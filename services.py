@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import model
-from model import OrderLine
+from model import OrderLine, Batch
 from repository import AbstractRepository
 
 
@@ -20,3 +20,24 @@ def allocate(line: OrderLine, repo: AbstractRepository, session) -> str:
     batchref = model.allocate(line, batches)
     session.commit()
     return batchref
+
+
+def add_batch(batch: Batch, repo: AbstractRepository, session):
+    repo.add(batch)
+    session.commit()
+    pass
+
+
+def deallocate(line: OrderLine, batchref: str, repo: AbstractRepository, session):
+    batch = repo.get(batchref)
+    batch.deallocate(line)
+    session.commit()
+
+
+# def deallocate(line: OrderLine, repo: AbstractRepository, session):
+#     batches = repo.list()
+#     for b in batches:
+#         if line.sku == b.sku:
+#             b.deallocate(line)
+#     session.commit()
+
