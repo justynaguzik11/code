@@ -8,6 +8,10 @@ class OutOfStock(Exception):
     pass
 
 
+class OrderLineNotInAllocations(Exception):
+    pass
+
+
 def allocate(line: OrderLine, batches: List[Batch]) -> str:
     try:
         batch = next(b for b in sorted(batches) if b.can_allocate(line))
@@ -57,6 +61,8 @@ class Batch:
     def deallocate(self, line: OrderLine):
         if line in self._allocations:
             self._allocations.remove(line)
+        else:
+            raise OrderLineNotInAllocations(f"OrderLine was not allocated to batch {self.reference}")
 
     @property
     def allocated_quantity(self) -> int:

@@ -64,25 +64,32 @@ def test_deallocate_decrements_available_quantity():
     assert batch.available_quantity == 90
 
     services.deallocate(line, batchref, repo, session)
-    # services.deallocate(line, repo, session)
     assert batch.available_quantity == 100
 
 
-def test_deallocate_decrements_correct_quantity():
-    line = model.OrderLine("o1", "RED-LAMP", 10)
-    batch1 = model.Batch("b1", "COMPLICATED-LAMP", 100, eta=None)
-    batch2 = model.Batch("b2", "RED-LAMP", 100, eta=None)
-    repo = FakeRepository([batch1, batch2])
-    session = FakeSession()
-
-    batchref = services.allocate(line, repo, session)
-    batch = repo.get(reference="b1")
-    assert batch.available_quantity == 90
-
-    services.deallocate(line, batchref, repo, session)
-
-    assert batch.available_quantity == 100
+# def test_deallocate_decrements_correct_quantity():
+#     line = model.OrderLine("o1", "RED-LAMP", 10)
+#     batch1 = model.Batch("b1", "COMPLICATED-LAMP", 100, eta=None)
+#     batch2 = model.Batch("b2", "RED-LAMP", 100, eta=None)
+#     repo = FakeRepository([batch1, batch2])
+#     session = FakeSession()
+#
+#     batchref = services.allocate(line, repo, session)
+#     batch = repo.get(reference="b2")
+#     assert batch.available_quantity == 90
+#
+#     services.deallocate(line, batchref, repo, session)
+#
+#     assert batch.available_quantity == 100
 
 
 def test_trying_to_deallocate_unallocated_batch():
-    ...  #  TODO: should this error or pass silently? up to you.
+    line = model.OrderLine("o1", "RED-LAMP", 10)
+    batch1 = model.Batch("b1", "RED-LAMP", 100, eta=None)
+    repo = FakeRepository([batch1])
+    session = FakeSession()
+    with pytest.raises(model.OrderLineNotInAllocations, match="b1"):
+        services.deallocate(line, "b1", repo, session)
+
+
+

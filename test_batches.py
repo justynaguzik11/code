@@ -1,5 +1,6 @@
 from datetime import date
-from model import Batch, OrderLine
+import pytest
+from model import Batch, OrderLine, OrderLineNotInAllocations
 
 
 def test_allocating_to_a_batch_reduces_the_available_quantity():
@@ -55,5 +56,6 @@ def test_deallocate():
 
 def test_can_only_deallocate_allocated_lines():
     batch, unallocated_line = make_batch_and_line("DECORATIVE-TRINKET", 20, 2)
-    batch.deallocate(unallocated_line)
+    with pytest.raises(OrderLineNotInAllocations, match="batch-001"):
+        batch.deallocate(unallocated_line)
     assert batch.available_quantity == 20
