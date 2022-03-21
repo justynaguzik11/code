@@ -59,12 +59,11 @@ def test_deallocate_decrements_available_quantity():
     batch_to_add = model.Batch("b1", "BLUE-PLINTH", 100, eta=None)
 
     services.add_batch(batch_to_add, repo, session)
-    batchref = services.allocate(line, repo, session)
+    services.allocate(line, repo, session)
     batch = repo.get(reference="b1")
     assert batch.available_quantity == 90
 
-    services.deallocate(line, batchref, repo, session)
-    # services.deallocate(line, repo, session)
+    services.deallocate(line, repo, session)
     assert batch.available_quantity == 100
 
 
@@ -75,14 +74,26 @@ def test_deallocate_decrements_correct_quantity():
     repo = FakeRepository([batch1, batch2])
     session = FakeSession()
 
-    batchref = services.allocate(line, repo, session)
-    batch = repo.get(reference="b1")
+    services.allocate(line, repo, session)
+    batch = repo.get(reference="b2")
     assert batch.available_quantity == 90
 
-    services.deallocate(line, batchref, repo, session)
-
+    services.deallocate(line, repo, session)
     assert batch.available_quantity == 100
 
 
 def test_trying_to_deallocate_unallocated_batch():
-    ...  #  TODO: should this error or pass silently? up to you.
+    ...  #  TODO: should this error or pass silently?
+    line = model.OrderLine("ol1", "HEAVY-CHAIR", 6)
+    batch = model.Batch("b1", "HEAVY-CHAIR", 100, eta=None)
+    repo = FakeRepository([batch])
+    session = FakeSession()
+
+    batch = repo.get(reference="b1")
+    assert batch.available_quantity == 100
+
+    services.deallocate(line, repo, session)
+    assert batch.available_quantity == 100
+
+
+

@@ -28,16 +28,10 @@ def add_batch(batch: Batch, repo: AbstractRepository, session):
     pass
 
 
-def deallocate(line: OrderLine, batchref: str, repo: AbstractRepository, session):
-    batch = repo.get(batchref)
-    batch.deallocate(line)
+def deallocate(line: OrderLine, repo: AbstractRepository, session):
+    batches = repo.list()
+    for b in batches:
+        if line.sku == b.sku:
+            b.deallocate(line)
     session.commit()
-
-
-# def deallocate(line: OrderLine, repo: AbstractRepository, session):
-#     batches = repo.list()
-#     for b in batches:
-#         if line.sku == b.sku:
-#             b.deallocate(line)
-#     session.commit()
 
