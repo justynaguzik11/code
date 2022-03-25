@@ -14,6 +14,20 @@ get_session = sessionmaker(bind=create_engine(config.get_postgres_uri()))
 app = Flask(__name__)
 
 
+@app.route("/add_batch", methods=["POST"])
+def add_batch_endpoint():
+    session = get_session()
+    repo = repository.SqlAlchemyRepository(session)
+    batch = model.Batch(
+        request.json["ref"],
+        request.json["sku"],
+        request.json["qty"],
+        request.json["eta"]
+    )
+    services.add_batch(batch, repo, session)
+    return "ok", 200
+
+
 @app.route("/allocate", methods=["POST"])
 def allocate_endpoint():
     session = get_session()
@@ -21,7 +35,7 @@ def allocate_endpoint():
     line = model.OrderLine(
         request.json["orderid"],
         request.json["sku"],
-        request.json["qty"],
+        request.json["qty"]
     )
 
     try:
@@ -39,7 +53,7 @@ def deallocate_endpoint():
     line = model.OrderLine(
         request.json["orderid"],
         request.json["sku"],
-        request.json["qty"],
+        request.json["qty"]
     )
 
     services.deallocate(line, repo, session)
