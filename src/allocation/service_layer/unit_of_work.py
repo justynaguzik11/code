@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
-from allocation import config
-from allocation.adapters import repository
+from src.allocation import config
+from src.allocation.adapters import repository
 
 
 class AbstractUnitOfWork(abc.ABC):
@@ -32,8 +32,9 @@ DEFAULT_SESSION_FACTORY = sessionmaker(
 
 
 class SqlAlchemyUnitOfWork:
-    ...
+    def __init__(self):
 
+# UnitOfWorkManager
 
 # One alternative would be to define a `start_uow` function,
 # or a UnitOfWorkStarter or UnitOfWorkManager that does the
